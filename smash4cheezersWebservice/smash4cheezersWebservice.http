@@ -1,0 +1,6 @@
+@smash4cheezersWebservice_HostAddress = http://localhost:5104
+
+GET {{smash4cheezersWebservice_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
