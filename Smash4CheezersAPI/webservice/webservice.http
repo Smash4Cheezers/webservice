@@ -1,6 +1,6 @@
 @webservice_HostAddress = http://localhost:5183
 
-GET {{webservice_HostAddress}}/weatherforecast/
+GET {{webservice_HostAddress}}/api/User
 Accept: application/json
 
 ###
