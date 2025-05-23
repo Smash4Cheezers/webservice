@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
-[Table("users")]
 public class User
 {
     [Key]
@@ -20,5 +19,4 @@ public class User
     
     [ForeignKey(nameof(Character))]
     public int? CharacterID { get; set; }
-    public Character Character { get; set; }
 }
