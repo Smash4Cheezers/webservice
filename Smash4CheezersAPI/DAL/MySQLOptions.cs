@@ -26,7 +26,4 @@ public class MySQLOptions
     public uint Port { get; set; } = 3306;
     public string Username { get; set; } = "root";
     public string Schema { get; set; } = "smashforcheezers";
-    
-    public string ToConnectionString() =>
-        $"Server={this.Host};Port={this.Port};Username={this.Username};Password={this.Password};Database={this.Schema}";
 }
