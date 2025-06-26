@@ -22,9 +22,18 @@ public interface IUserService
     Task<IEnumerable<User>> GetAllUsers();
 
     /// <summary>
-    /// Get a user by its id
+    /// Get a user by his id
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>the user</returns>
     Task<User> GetUserById(int id);
+    
+    /// <summary>
+    /// Delete a user by his id
+    /// </summary>
+    /// <param name="id">Id of the user</param>
+    /// <returns>User deleted</returns>
+    Task<int> DeleteUser(int id);
+    
+    Task<User> UpdateUser(int id, UserDTO user);
 }

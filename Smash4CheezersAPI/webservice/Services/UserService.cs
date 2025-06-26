@@ -43,4 +43,22 @@ public class UserService : IUserService
     {
         return await _usersDAO.GetUser(id);
     }
+
+    public async Task<int> DeleteUser(int id)
+    {
+        return await _usersDAO.Delete(id); 
+    }
+
+    public async Task<User> UpdateUser(int id, UserDTO user)
+    {
+        var u = new User
+        {
+            Id = id,
+            Username = user.Username,
+            Email = user.Email,
+            Password = user.Password,
+        };
+        u.Password = _passwordHasher.HashPassword(u, u.Password);
+        return await _usersDAO.Update(u);
+    }
 }

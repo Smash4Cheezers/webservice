@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL;
 using DAL.DAO;
 using DAL.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using webservice.DTO;
 using webservice.Services;
@@ -58,5 +59,37 @@ public class UserController : ControllerBase
             }
         }
 
-        
+        //DELETE: api/users/?
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                int u = await _userService.DeleteUser(id);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDTO>> UpdateUser(int id, [FromBody] UserDTO user)
+        {
+            if (id != user.Id)
+            {
+                return NotFound(id);
+            }
+
+            try
+            {
+                await _userService.UpdateUser(id, user);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return NotFound();
+            }
+        }
 }
