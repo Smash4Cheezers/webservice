@@ -5,58 +5,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.DAO;
 
-/// <summary>
-/// Users table data accessor 
-/// </summary>
-public class UsersDAO
+ /// <inheritdoc cref="IUsersDAO"/>
+public class UsersDAO : IUsersDAO
 {
     private readonly S4CDbContext _context;
 
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="context">Database link</param>
+   
     public UsersDAO(S4CDbContext context)
     {
         _context = context;
     }
 
-    /// <summary>
-    /// Create a user in a new row in the users table
-    /// </summary>
-    /// <param name="user">The user to create</param>
-    public async Task Create(User user)
+    
+    public async Task<User> Create(User user)
     {
-        _context.Users.Add(user);
+        var u = _context.Users.Add(user);
         await _context.SaveChangesAsync();
+        return u.Entity;
     }
 
-    /// <summary>
-    /// Update a user in the users table
-    /// </summary>
-    /// <param name="user">The user to update</param>
-    public async Task Update(User user)
+    
+    public async Task<User> Update(User user)
     {
-        _context.Users.Update(user);
+        var u = _context.Users.Update(user);
         await _context.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Delete a user
-    /// </summary>
-    /// <param name="id">id of the user</param>
-    public async Task Delete(int id)
-    {
-        _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
-        await _context.SaveChangesAsync();
+        return u.Entity;
     }
     
-    /// <summary>
-    /// Retrieve a user by an id
-    /// </summary>
-    /// <param name="id">the id of the user</param>
-    /// <returns>The user</returns>
-    /// <exception cref="NotFoundException">Throw it when a user isn't found</exception>
+    public async Task<int> Delete(int id)
+    {
+        var u = _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
+        await _context.SaveChangesAsync();
+        return u.Entity.Id;
+    }
+    
     public async Task<User> GetUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
@@ -66,11 +48,7 @@ public class UsersDAO
         }
         return user;
     }
-
-    /// <summary>
-    /// Get all users
-    /// </summary>
-    /// <returns>A list of users</returns>
+    
     public async Task<IEnumerable<User>> GetUsers()
     {
         return await _context.Users.ToListAsync();
