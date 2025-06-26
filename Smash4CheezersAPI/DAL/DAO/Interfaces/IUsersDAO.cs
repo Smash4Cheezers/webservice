@@ -1,4 +1,5 @@
-﻿using DAL.Exceptions;
+﻿using System.Data;
+using DAL.Exceptions;
 using DAL.Models;
 
 namespace DAL.DAO;
@@ -24,6 +25,7 @@ public interface IUsersDAO
     /// Delete a user
     /// </summary>
     /// <param name="id">id of the user</param>
+    /// <exception cref="NoNullAllowedException"></exception>
     Task<int> Delete(int id);
 
     /// <summary>
