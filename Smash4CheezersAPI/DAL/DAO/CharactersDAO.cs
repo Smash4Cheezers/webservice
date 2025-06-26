@@ -3,41 +3,49 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.DAO;
 
-public class CharactersDAO
+/// <inheritdoc />
+public class CharactersDAO : ICharactersDAO
 {
     private readonly S4CDbContext _context;
 
+    /// <summary>
+    /// Constructor link to table from the db
+    /// </summary>
+    /// <param name="context"></param>
     public CharactersDAO(S4CDbContext context)
     {
         _context = context;
     }
 
-    public async Task Create(Character character)
+    public async Task<Character> Create(Character character)
     {
         if(character == null)
             throw new ArgumentNullException(nameof(character));
-        _context.Characters.Add(character);
+        var c = _context.Characters.Add(character);
         await _context.SaveChangesAsync();
+        return c.Entity;
     }
 
-    public async Task Update(Character character)
+    public async Task<Character> Update(Character character)
     {
         if(character == null)
             throw new ArgumentNullException(nameof(character));
-        _context.Characters.Update(character);
+        var c = _context.Characters.Update(character);
         await _context.SaveChangesAsync();
+        return c.Entity;
     }
 
-    public async Task Delete(int id)
+    public async Task<int> Delete(int id)
     {
         var character = await _context.Characters.FindAsync(id);
         if(character == null)
             throw new KeyNotFoundException("Character not found");
         _context.Characters.Remove(character ?? throw new NullReferenceException());
         await _context.SaveChangesAsync();
+        return character.Id;
     }
 
-    public async Task<List<Character>> GetAll()
+    public async Task<IEnumerable<Character>> GetAll()
     {
         return await _context.Characters.ToListAsync();
     }
