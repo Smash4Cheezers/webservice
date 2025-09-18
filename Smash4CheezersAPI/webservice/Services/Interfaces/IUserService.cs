@@ -13,7 +13,7 @@ public interface IUserService
     /// </summary>
     /// <param name="user">user provided</param>
     /// <returns>User completed</returns>
-    Task<User> CreateUser(UserDTO user);
+    Task<User?> CreateUser(UserDTO user);
 
     /// <summary>
     /// Get all users
@@ -26,7 +26,7 @@ public interface IUserService
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>the user</returns>
-    Task<User> GetUserById(int id);
+    Task<UserDTO> GetUserById(int id);
     
     /// <summary>
     /// Delete a user by his id
@@ -35,5 +35,5 @@ public interface IUserService
     /// <returns>User deleted</returns>
     Task<int> DeleteUser(int id);
     
-    Task<User> UpdateUser(int id, UserDTO user);
+    Task<User?> UpdateUserInformations(int id, UserDTO user);
 }

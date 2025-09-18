@@ -5,6 +5,7 @@ using DAL.DAO;
 using DAL.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using webservice.DTO;
 using webservice.Services;
 
@@ -31,7 +32,7 @@ public class UserController : ControllerBase
 
         // GET: api/users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
             var user = await _userService.GetUserById(id);
             
@@ -84,7 +85,7 @@ public class UserController : ControllerBase
 
             try
             {
-                await _userService.UpdateUser(id, user);
+                await _userService.UpdateUserInformations(id, user);
                 return NoContent();
             }
             catch (Exception e)
@@ -92,4 +93,30 @@ public class UserController : ControllerBase
                 return NotFound();
             }
         }
+        
+        // api/users/login
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDTO>> Login([FromBody] UserDTO user)
+        {
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var u = await _userService.GetUserById(user.Id);
+                if (user.Password == u.Password && user.Username == u.Username && user.Email == u.Email)
+                {
+                    return Ok("Vous êtes authentifié !");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            return BadRequest();
+        }
+        
+        
 }

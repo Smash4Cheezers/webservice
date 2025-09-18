@@ -1,6 +1,7 @@
 ﻿using DAL.DAO;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using webservice.DTO;
 
 namespace webservice.Services;
@@ -8,17 +9,17 @@ namespace webservice.Services;
 public class UserService : IUserService
 {
     private IUsersDAO _usersDAO;
-    private IPasswordHasher<User> _passwordHasher;
+    private IPasswordHasher<User?> _passwordHasher;
 
-    public UserService(IUsersDAO usersDAO, IPasswordHasher<User> passwordHasher)
+    public UserService(IUsersDAO usersDAO, IPasswordHasher<User?> passwordHasher, ICharactersDAO characterDAO)
     {
         this._usersDAO = usersDAO;
         this._passwordHasher = passwordHasher;
     }
 
-    public async Task<User> CreateUser(UserDTO user)
+    public async Task<User?> CreateUser(UserDTO user)
     {
-        User u = new User
+        User? u = new User
         {
             Username = user.Username,
             Email = user.Email,
@@ -39,17 +40,32 @@ public class UserService : IUserService
         });
     }
 
-    public async Task<User> GetUserById(int id)
+    public async Task<UserDTO> GetUserById(int id)
     {
-        return await _usersDAO.GetUser(id);
+        var u = await _usersDAO.GetUser(id);
+        CharacterDTO character = new CharacterDTO
+        {
+            Id = u.Character.Id,
+            Name = u.Character.Name,
+            Weight = u.Character.Weight,
+            WeightCategory = u.Character.WeightCategory,
+        };
+        UserDTO user = new UserDTO
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            Character = character
+        };
+        return user;
     }
 
     public async Task<int> DeleteUser(int id)
     {
-        return await _usersDAO.Delete(id); 
+        return await _usersDAO.Delete(id);
     }
 
-    public async Task<User> UpdateUser(int id, UserDTO user)
+    public async Task<User?> UpdateUserInformations(int id, UserDTO user)
     {
         var u = new User
         {

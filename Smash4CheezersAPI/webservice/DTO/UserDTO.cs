@@ -1,4 +1,6 @@
-﻿namespace webservice.DTO;
+﻿using DAL.Models;
+
+namespace webservice.DTO;
 
 public class UserDTO
 {
@@ -9,4 +11,5 @@ public class UserDTO
     public string Password { get; set; }
     
     public string Email { get; set; }
+    public CharacterDTO? Character { get; set; }
 }

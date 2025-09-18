@@ -19,4 +19,6 @@ public class User
     
     [ForeignKey(nameof(Character))]
     public int? CharacterID { get; set; }
+    
+    public Character? Character { get; set; }
 }

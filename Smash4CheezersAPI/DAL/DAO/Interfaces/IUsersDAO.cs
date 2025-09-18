@@ -13,13 +13,13 @@ public interface IUsersDAO
     /// Create a user in a new row in the users table
     /// </summary>
     /// <param name="user">The user to create</param>
-    Task<User> Create(User user);
+    Task<User?> Create(User? user);
 
     /// <summary>
     /// Update a user in the users table
     /// </summary>
     /// <param name="user">The user to update</param>
-    Task<User> Update(User user);
+    Task<User?> Update(User? user);
 
     /// <summary>
     /// Delete a user
@@ -40,5 +40,12 @@ public interface IUsersDAO
     /// Get all users
     /// </summary>
     /// <returns>A list of users</returns>
-    Task<IEnumerable<User>> GetUsers();
+    Task<IEnumerable<User?>> GetUsers();
+    
+    /// <summary>
+    /// Get a user by his character
+    /// </summary>
+    /// <param name="id">Current ID of the character</param>
+    /// <returns>Users who have the current character id in main character player</returns>
+    Task<User?> GetUsersByCharacter(int id);
 }
