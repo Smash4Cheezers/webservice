@@ -3,7 +3,6 @@ using DAL.DAO;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OpenApi;
 using webservice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
