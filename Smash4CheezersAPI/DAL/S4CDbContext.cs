@@ -39,7 +39,5 @@ public class S4CDbContext : DbContext
     public DbSet<Character> Characters { get; set; }
     public DbSet<User> Users { get; set; }
 
-        #endregion
-    
-    
+    #endregion
 }

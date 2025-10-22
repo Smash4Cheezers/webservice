@@ -1,9 +1,10 @@
 using DAL;
 using DAL.DAO;
+using DAL.DAO.Interfaces;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OpenApi;
+using webservice.Controllers.Interfaces;
 using webservice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +15,15 @@ var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 builder.Services.AddDbContext<S4CDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SmashForCheezers"), serverVersion));
 
+// DAO
 builder.Services.AddScoped<IUsersDAO, UsersDAO>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICharactersDAO, CharactersDAO>();
+
+// Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+
+// Utils
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddControllers();

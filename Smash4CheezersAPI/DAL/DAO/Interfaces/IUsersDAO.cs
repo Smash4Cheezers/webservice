@@ -2,34 +2,34 @@
 using DAL.Exceptions;
 using DAL.Models;
 
-namespace DAL.DAO;
+namespace DAL.DAO.Interfaces;
 
 /// <summary>
-/// Interface defining data access operations for Users entities
+///     Interface defining data access operations for Users entities
 /// </summary>
 public interface IUsersDAO
 {
     /// <summary>
-    /// Create a user in a new row in the users table
+    ///     Create a user in a new row in the users table
     /// </summary>
     /// <param name="user">The user to create</param>
-    Task<User> Create(User user);
+    Task<User?> Create(User? user);
 
     /// <summary>
-    /// Update a user in the users table
+    ///     Update a user in the users table
     /// </summary>
     /// <param name="user">The user to update</param>
-    Task<User> Update(User user);
+    Task<User?> Update(User? user);
 
     /// <summary>
-    /// Delete a user
+    ///     Delete a user
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <exception cref="NoNullAllowedException"></exception>
     Task<int> Delete(int id);
 
     /// <summary>
-    /// Retrieve a user by an id
+    ///     Retrieve a user by an id
     /// </summary>
     /// <param name="id">the id of the user</param>
     /// <returns>The user</returns>
@@ -37,8 +37,15 @@ public interface IUsersDAO
     Task<User> GetUser(int id);
 
     /// <summary>
-    /// Get all users
+    ///     Get all users
     /// </summary>
     /// <returns>A list of users</returns>
-    Task<IEnumerable<User>> GetUsers();
+    Task<IEnumerable<User?>> GetUsers();
+
+    /// <summary>
+    ///     Get a user by his character
+    /// </summary>
+    /// <param name="id">Current ID of the character</param>
+    /// <returns>Users who have the current character id in main character player</returns>
+    Task<User?> GetUsersByCharacter(int id);
 }
