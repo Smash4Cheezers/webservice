@@ -1,7 +1,8 @@
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using webservice.Controllers.Interfaces;
 using webservice.DTO;
-using webservice.Services;
+using webservice.Exceptions;
 
 namespace webservice.Controllers;
 
@@ -26,11 +27,12 @@ public class UserController : ControllerBase
 
     // GET: api/users/5
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<UserDTO>> GetUser(int id)
     {
-        var user = await _userService.GetUserById(id);
-
-        if (user == null) return NotFound();
+        UserDTO user = await _userService.GetUserById(id);
 
         return Ok(user);
     }
@@ -38,6 +40,8 @@ public class UserController : ControllerBase
 
     // POST: api/users/register
     [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDTO>> Register([FromBody] UserDTO user)
     {
         try
@@ -84,20 +88,18 @@ public class UserController : ControllerBase
 
     // api/users/login
     [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDTO>> Login([FromBody] UserDTO user)
     {
-        if (user == null) return BadRequest();
-
         try
         {
-            var u = await _userService.GetUserById(user.Id);
-            if (user.Password == u.Password && user.Username == u.Username && user.Email == u.Email)
-                return Ok("Vous êtes authentifié !");
+            User? u = await _userService.LoginUser(user);
+            return Ok("Vous êtes authentifié !");
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new UserException("Les identifiants envoyés sont incorrects");
         }
 
         return BadRequest();

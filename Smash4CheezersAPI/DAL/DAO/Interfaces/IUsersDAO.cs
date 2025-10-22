@@ -2,7 +2,7 @@
 using DAL.Exceptions;
 using DAL.Models;
 
-namespace DAL.DAO;
+namespace DAL.DAO.Interfaces;
 
 /// <summary>
 ///     Interface defining data access operations for Users entities

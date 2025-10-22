@@ -37,7 +37,7 @@ public class S4CDbContext : DbContext
     #region Recognition
 
     public DbSet<Character> Characters { get; set; }
-    public DbSet<User?> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
     #endregion
 }

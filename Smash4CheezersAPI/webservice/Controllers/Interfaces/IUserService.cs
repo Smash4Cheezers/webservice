@@ -1,10 +1,10 @@
 ﻿using DAL.Models;
 using webservice.DTO;
 
-namespace webservice.Services;
+namespace webservice.Controllers.Interfaces;
 
 /// <summary>
-///     Manage the result from controller with some tools and reformat information to the DAO
+///     Manage the result from the controller with some tools and reformat information to the DAO
 /// </summary>
 public interface IUserService
 {
@@ -31,9 +31,22 @@ public interface IUserService
     /// <summary>
     ///     Delete a user by his id
     /// </summary>
-    /// <param name="id">Id of the user</param>
+    /// <param name="id">id of the user</param>
     /// <returns>User deleted</returns>
     Task<int> DeleteUser(int id);
 
+    /// <summary>
+    /// Update user informations
+    /// </summary>
+    /// <param name="id">user id</param>
+    /// <param name="user">user information</param>
+    /// <returns></returns>
     Task<User?> UpdateUserInformations(int id, UserDTO user);
+
+    /// <summary>
+    /// Verify if the user is in the database and if the password is correct
+    /// </summary>
+    /// <param name="user">User informations from client-side</param>
+    /// <returns>A token if informations are true and existing, a 404 if not</returns>
+    public Task<User?> LoginUser(UserDTO user);
 }
