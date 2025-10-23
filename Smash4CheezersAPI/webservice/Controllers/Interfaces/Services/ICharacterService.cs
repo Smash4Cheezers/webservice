@@ -1,6 +1,6 @@
 ﻿using webservice.DTO;
 
-namespace webservice.Controllers.Interfaces;
+namespace webservice.Controllers.Interfaces.Services;
 
 /// <summary>
 /// Interface defining data access operations for Character entities

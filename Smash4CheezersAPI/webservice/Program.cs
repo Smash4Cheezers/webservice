@@ -1,10 +1,15 @@
+using System.Data;
 using DAL;
 using DAL.DAO;
 using DAL.DAO.Interfaces;
 using DAL.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using webservice.Controllers.Interfaces;
+using Microsoft.IdentityModel.Tokens;
+using webservice.Controllers.Interfaces.Helpers;
+using webservice.Controllers.Interfaces.Services;
+using webservice.Helpers;
 using webservice.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +28,34 @@ builder.Services.AddScoped<ICharactersDAO, CharactersDAO>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 
+// Helpers
+builder.Services.AddScoped<ITokenHelper, TokenHelper>();
+
 // Utils
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "myApp",
+        ValidAudience = "http://localhost:5183/api/",
+        IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(s: builder.Configuration["Jwt:Key"] ?? throw new NoNullAllowedException())),
+        RequireExpirationTime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

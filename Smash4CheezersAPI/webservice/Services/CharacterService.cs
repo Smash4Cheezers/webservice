@@ -1,6 +1,6 @@
 ﻿using DAL.DAO.Interfaces;
 using DAL.Models;
-using webservice.Controllers.Interfaces;
+using webservice.Controllers.Interfaces.Services;
 using webservice.DTO;
 
 namespace webservice.Services;

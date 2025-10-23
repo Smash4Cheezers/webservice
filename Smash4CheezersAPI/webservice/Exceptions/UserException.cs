@@ -1,6 +1,7 @@
 ﻿namespace webservice.Exceptions;
 
 /// <summary>
-///     Handle the exception that concerns a user from the Web-Service layer
+/// Represents an exception specific to user-related operations in the Web-Service layer.
 /// </summary>
-public class UserException(string? message) : Exception(message);
+/// <param name="message">The message that describes the error.</param>
+public class UserException(string message) : Exception(message);

@@ -1,8 +1,7 @@
 ﻿using DAL.DAO.Interfaces;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Elfie.Extensions;
-using webservice.Controllers.Interfaces;
+using webservice.Controllers.Interfaces.Services;
 using webservice.DTO;
 using webservice.Exceptions;
 
@@ -26,16 +25,16 @@ public class UserService : IUserService
         _characterService = characterService;
     }
 
-    public async Task<User?> CreateUser(UserDTO user)
+    public async Task<User> CreateUser(UserDTO user)
     {
-        var u = new User
+        User u = new User
         {
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
             Password = user.Password = _passwordHasher.HashPassword(null, user.Password)
         };
-        return await _usersDao.Create(u);
+        return await _usersDao.Create(u) ?? throw new UserException("Impossible to create the user");
     }
 
     public async Task<User?> LoginUser(UserDTO user)
@@ -46,10 +45,10 @@ public class UserService : IUserService
             : throw new UserException("Current password is incorrect");
     }
 
-    public async Task<IEnumerable<User>> GetAllUsers()
+    public async Task<IEnumerable<UserDTO?>> GetAllUsers()
     {
-        IEnumerable<User?> users = await _usersDao.GetUsers();
-        return users.Select(u => new User
+        IEnumerable<User?> u = await _usersDao.GetUsers();
+        return u.Select(u => new UserDTO()
         {
             Id = u.Id,
             Username = u.Username,
