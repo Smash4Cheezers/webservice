@@ -454,11 +454,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 *.idea
-
-
-
-public bool EqualsComplex(NbComplex nb1, NbComplex nb2)
-{
-	if(nb1 == nb2) return true
-	else return false
-}
+*appsettings.json
