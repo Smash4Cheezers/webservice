@@ -1,7 +1,8 @@
 ﻿using DAL.Models;
 using webservice.DTO;
+using webservice.Exceptions;
 
-namespace webservice.Controllers.Interfaces;
+namespace webservice.Controllers.Interfaces.Services;
 
 /// <summary>
 ///     Manage the result from the controller with some tools and reformat information to the DAO
@@ -13,13 +14,13 @@ public interface IUserService
     /// </summary>
     /// <param name="user">user provided</param>
     /// <returns>User completed</returns>
-    Task<User?> CreateUser(UserDTO user);
+    Task<User> CreateUser(UserDTO user);
 
     /// <summary>
     ///     Get all users
     /// </summary>
     /// <returns>Collection of users</returns>
-    Task<IEnumerable<User>> GetAllUsers();
+    Task<IEnumerable<UserDTO?>> GetAllUsers();
 
     /// <summary>
     ///     Get a user by his id
@@ -47,6 +48,7 @@ public interface IUserService
     /// Verify if the user is in the database and if the password is correct
     /// </summary>
     /// <param name="user">User informations from client-side</param>
+    /// <exception cref="UserException">Returns a not found</exception>
     /// <returns>A token if informations are true and existing, a 404 if not</returns>
     public Task<User?> LoginUser(UserDTO user);
 }
