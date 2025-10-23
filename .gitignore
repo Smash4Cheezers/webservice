@@ -455,4 +455,5 @@ FodyWeavers.xsd
 *.sln.iml
 *.idea
 *appsettings.json
+appsettings.json
 Smash4CheezersAPI/webservice/appsettings.json
