@@ -32,6 +32,15 @@ public class S4CDbContext : DbContext
             entity.Property(x => x.Password).IsRequired();
             entity.Property(x => x.Email).IsRequired();
         });
+        modelBuilder.Entity<Session>(entity =>
+        {
+            entity.ToTable("sessions");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).ValueGeneratedOnAdd();
+            entity.Property(x => x.Token).IsRequired();
+            entity.Property(x => x.Expiration).IsRequired();
+            entity.Property(x => x.UserId).IsRequired();
+        });
     }
 
     #region Recognition
@@ -39,5 +48,6 @@ public class S4CDbContext : DbContext
     public DbSet<Character> Characters { get; set; }
     public DbSet<User> Users { get; set; }
 
+    public DbSet<Session> Sessions { get; set; }
     #endregion
 }

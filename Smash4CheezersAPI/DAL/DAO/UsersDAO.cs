@@ -18,15 +18,15 @@ public class UsersDAO : IUsersDAO
     }
 
 
-    public async Task<User?> Create(User? user)
+    public async Task<User?> Create(User user)
     {
-        var u = _context.Users.Add(user);
+        var u = await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
         return u.Entity;
     }
 
 
-    public async Task<User?> Update(User? user)
+    public async Task<User?> Update(User user)
     {
         var u = _context.Users.Update(user);
         await _context.SaveChangesAsync();
@@ -36,9 +36,8 @@ public class UsersDAO : IUsersDAO
     public async Task<int> Delete(int id)
     {
         var u = _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
-        await _context.SaveChangesAsync();
-        if (u.Entity != null) return u.Entity.Id;
-        throw new NotFoundException("User not found");
+        await _context.SaveChangesAsync(); 
+        return u.Entity.Id != null ? u.Entity.Id : throw new NotFoundException("User not found");
     }
 
     public async Task<User> GetUser(int id)

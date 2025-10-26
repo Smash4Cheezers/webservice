@@ -18,6 +18,7 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="usersDao">DAO injected</param>
     /// <param name="passwordHasher">Tool for hash a password and verify a password</param>
+    /// <param name="characterService">Needed to access data from the Character table</param>
     public UserService(IUsersDAO usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
     {
         _usersDao = usersDao;
@@ -40,19 +41,22 @@ public class UserService : IUserService
     public async Task<User?> LoginUser(UserDTO user)
     {
         User u = await _usersDao.GetUser(user.Id);
-        return _passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) == PasswordVerificationResult.Success
-            ? u
-            : throw new UserException("Current password is incorrect");
+        if (_passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) != PasswordVerificationResult.Success)
+        {
+                throw new UserException("Current password is incorrect");
+        }
+        
+        return u;
     }
 
     public async Task<IEnumerable<UserDTO?>> GetAllUsers()
     {
         IEnumerable<User?> u = await _usersDao.GetUsers();
-        return u.Select(u => new UserDTO()
+        return u.Select(user => new UserDTO()
         {
-            Id = u.Id,
-            Username = u.Username,
-            Email = u.Email
+            Id = user!.Id,
+            Username = user.Username,
+            Email = user.Email
         }) ?? throw new UserException("No users found");
     }
 

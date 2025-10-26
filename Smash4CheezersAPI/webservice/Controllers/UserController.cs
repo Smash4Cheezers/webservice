@@ -18,17 +18,17 @@ namespace webservice.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly ITokenHelper _tokenHelper;
+    private readonly ISessionService _sessionService;
 
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="userService">Dependency injection for service</param>
-    /// <param name="tokenHelper">Dependency injection for generating a JWT</param>
-    public UserController(IUserService userService, ITokenHelper tokenHelper)
+    /// <param name="userService">Dependency injection for user service</param>
+    /// <param name="sessionService">Dependency injection for session service</param>
+    public UserController(IUserService userService, ISessionService sessionService)
     {
         _userService = userService;
-        _tokenHelper = tokenHelper;
+        _sessionService = sessionService;
     }
 
     /// <summary>
@@ -136,8 +136,8 @@ public class UserController : ControllerBase
         try
         {
             User? u = await _userService.LoginUser(user);
-            string token = _tokenHelper.GenerateTokenJwt(u?.Username ?? throw new TokenException("Username not found"));
-            return Ok($"Login successful + {token}");
+           await _sessionService.CreateSession(new Session() { User = u!, UserId = u!.Id});
+            return Ok($"Login successful, hello {u.Username} !");
         }
         catch (Exception)
         {

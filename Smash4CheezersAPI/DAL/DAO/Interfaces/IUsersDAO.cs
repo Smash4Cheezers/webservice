@@ -13,13 +13,13 @@ public interface IUsersDAO
     ///     Create a user in a new row in the users table
     /// </summary>
     /// <param name="user">The user to create</param>
-    Task<User?> Create(User? user);
+    Task<User?> Create(User user);
 
     /// <summary>
     ///     Update a user in the users table
     /// </summary>
     /// <param name="user">The user to update</param>
-    Task<User?> Update(User? user);
+    Task<User?> Update(User user);
 
     /// <summary>
     ///     Delete a user
