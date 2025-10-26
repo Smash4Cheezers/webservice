@@ -23,10 +23,12 @@ builder.Services.AddDbContext<S4CDbContext>(options =>
 // DAO
 builder.Services.AddScoped<IUsersDAO, UsersDAO>();
 builder.Services.AddScoped<ICharactersDAO, CharactersDAO>();
+builder.Services.AddScoped<ISessionDAO, SessionDAO>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
 
 // Helpers
 builder.Services.AddScoped<ITokenHelper, TokenHelper>();
