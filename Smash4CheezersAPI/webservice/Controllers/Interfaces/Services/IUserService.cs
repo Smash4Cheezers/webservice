@@ -14,20 +14,20 @@ public interface IUserService
     /// </summary>
     /// <param name="user">user provided</param>
     /// <returns>User completed</returns>
-    Task<User> CreateUser(UserDTO user);
+    Task<User> CreateUser(UserDto user);
 
     /// <summary>
     ///     Get all users
     /// </summary>
     /// <returns>Collection of users</returns>
-    Task<IEnumerable<UserDTO?>> GetAllUsers();
+    Task<IEnumerable<UserDto?>> GetAllUsers();
 
     /// <summary>
     ///     Get a user by his id
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>the user</returns>
-    Task<UserDTO> GetUserById(int id);
+    Task<UserDto> GetUserById(int id);
 
     /// <summary>
     ///     Delete a user by his id
@@ -42,7 +42,7 @@ public interface IUserService
     /// <param name="id">user id</param>
     /// <param name="user">user information</param>
     /// <returns></returns>
-    Task<User?> UpdateUserInformations(int id, UserDTO user);
+    Task<User?> UpdateUserInformations(int id, UserDto user);
 
     /// <summary>
     /// Verify if the user is in the database and if the password is correct
@@ -50,5 +50,5 @@ public interface IUserService
     /// <param name="user">User informations from client-side</param>
     /// <exception cref="UserException">Returns a not found</exception>
     /// <returns>A token if informations are true and existing, a 404 if not</returns>
-    public Task<User?> LoginUser(UserDTO user);
+    public Task<User?> LoginUser(UserDto user);
 }

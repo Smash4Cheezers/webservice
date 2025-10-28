@@ -11,12 +11,12 @@ public interface ICharacterService
     ///     Get all characters
     /// </summary>
     /// <returns>Collection of characters</returns>
-    Task<IEnumerable<CharacterDTO?>> GetAllCharacters();
+    Task<IEnumerable<CharacterDto?>> GetAllCharacters();
 
     /// <summary>
     ///     Get a character by its id
     /// </summary>
     /// <param name="id">id of the character</param>
     /// <returns>the character</returns>
-    Task<CharacterDTO?> GetCharacterById(int id);
+    Task<CharacterDto?> GetCharacterById(int id);
 }

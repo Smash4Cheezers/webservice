@@ -5,7 +5,7 @@ namespace DAL.DAO.Interfaces;
 /// <summary>
 /// Defines methods for managing and accessing session data in the data layer.
 /// </summary>
-public interface ISessionDAO
+public interface ISessionDao
 {
        /// <summary>
        /// Creates a new session associated with the provided token.

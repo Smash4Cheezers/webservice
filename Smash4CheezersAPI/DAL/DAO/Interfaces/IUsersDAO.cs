@@ -7,7 +7,7 @@ namespace DAL.DAO.Interfaces;
 /// <summary>
 ///     Interface defining data access operations for Users entities
 /// </summary>
-public interface IUsersDAO
+public interface IUsersDao
 {
     /// <summary>
     ///     Create a user in a new row in the users table

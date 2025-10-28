@@ -10,7 +10,7 @@ namespace webservice.Services;
 public class UserService : IUserService
 {
     private readonly IPasswordHasher<User> _passwordHasher;
-    private readonly IUsersDAO _usersDao;
+    private readonly IUsersDao _usersDao;
     private readonly ICharacterService _characterService;
 
     /// <summary>
@@ -19,14 +19,14 @@ public class UserService : IUserService
     /// <param name="usersDao">DAO injected</param>
     /// <param name="passwordHasher">Tool for hash a password and verify a password</param>
     /// <param name="characterService">Needed to access data from the Character table</param>
-    public UserService(IUsersDAO usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
+    public UserService(IUsersDao usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
     {
         _usersDao = usersDao;
         _passwordHasher = passwordHasher;
         _characterService = characterService;
     }
 
-    public async Task<User> CreateUser(UserDTO user)
+    public async Task<User> CreateUser(UserDto user)
     {
         User u = new User
         {
@@ -38,7 +38,7 @@ public class UserService : IUserService
         return await _usersDao.Create(u) ?? throw new UserException("Impossible to create the user");
     }
 
-    public async Task<User?> LoginUser(UserDTO user)
+    public async Task<User?> LoginUser(UserDto user)
     {
         User u = await _usersDao.GetUser(user.Id);
         if (_passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) != PasswordVerificationResult.Success)
@@ -49,10 +49,10 @@ public class UserService : IUserService
         return u;
     }
 
-    public async Task<IEnumerable<UserDTO?>> GetAllUsers()
+    public async Task<IEnumerable<UserDto?>> GetAllUsers()
     {
         IEnumerable<User?> u = await _usersDao.GetUsers();
-        return u.Select(user => new UserDTO()
+        return u.Select(user => new UserDto()
         {
             Id = user!.Id,
             Username = user.Username,
@@ -60,16 +60,16 @@ public class UserService : IUserService
         }) ?? throw new UserException("No users found");
     }
 
-    public async Task<UserDTO> GetUserById(int id)
+    public async Task<UserDto> GetUserById(int id)
     {
         User user = await _usersDao.GetUser(id);
         if(user == null) throw new UserException("User not found");
-        UserDTO userDto = new UserDTO
+        UserDto userDto = new UserDto
         {
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
-            Character = await _characterService.GetCharacterById(user.CharacterID == null ? 0 : user.CharacterID.Value)
+            Character = await _characterService.GetCharacterById(user.CharacterId == null ? 0 : user.CharacterId.Value)
         };
         return userDto;
     }
@@ -79,7 +79,7 @@ public class UserService : IUserService
         return await _usersDao.Delete(id);
     }
 
-    public async Task<User?> UpdateUserInformations(int id, UserDTO user)
+    public async Task<User?> UpdateUserInformations(int id, UserDto user)
     {
         User u = new User
         {

@@ -10,21 +10,21 @@ namespace webservice.Services;
 /// </summary>
 public class CharacterService : ICharacterService
 {
-    private readonly ICharactersDAO _charactersDao;
+    private readonly ICharactersDao _charactersDao;
     
     /// <summary>
     /// Constructor (dependencies injection)
     /// </summary>
     /// <param name="charactersDao">Dependency injection</param>
-    public CharacterService(ICharactersDAO charactersDao)
+    public CharacterService(ICharactersDao charactersDao)
     {
         _charactersDao = charactersDao;
     }
     
-    public async Task<IEnumerable<CharacterDTO?>> GetAllCharacters()
+    public async Task<IEnumerable<CharacterDto?>> GetAllCharacters()
     {
         IEnumerable<Character?> characters = await _charactersDao.GetAll();
-        return characters.Select(chara => new CharacterDTO
+        return characters.Select(chara => new CharacterDto
         {
             Id = chara.Id,
             Name = chara.Name,
@@ -33,10 +33,10 @@ public class CharacterService : ICharacterService
         });
     }
 
-    public async Task<CharacterDTO?> GetCharacterById(int id)
+    public async Task<CharacterDto?> GetCharacterById(int id)
     {
         Character character = await _charactersDao.GetCharacterById(id) ?? throw new NullReferenceException();
-        CharacterDTO characterDto = new CharacterDTO
+        CharacterDto characterDto = new CharacterDto
         {
             Id = character.Id,
             Name = character.Name,

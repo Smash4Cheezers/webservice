@@ -37,9 +37,9 @@ public class UserController : ControllerBase
     /// <url>GET api/users</url>   
     /// <returns>A task representing the asynchronous operation. The task result contains an action result with the collection of users.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
     {
-        IEnumerable<UserDTO?> users = await _userService.GetAllUsers();
+        IEnumerable<UserDto?> users = await _userService.GetAllUsers();
         return Ok(users);
     }
 
@@ -53,9 +53,9 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-    public async Task<ActionResult<UserDTO>> GetUser(int id)
+    public async Task<ActionResult<UserDto>> GetUser(int id)
     {
-        UserDTO user = await _userService.GetUserById(id);
+        UserDto user = await _userService.GetUserById(id);
         return Ok(user);
     }
 
@@ -69,7 +69,7 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserDTO>> Register([FromBody] UserDTO user)
+    public async Task<ActionResult<UserDto>> Register([FromBody] UserDto user)
     {
         try
         {
@@ -104,7 +104,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<UserDTO>> UpdateUser(int id, [FromBody] UserDTO user)
+    public async Task<ActionResult<UserDto>> UpdateUser(int id, [FromBody] UserDto user)
     {
         if (id != user.Id) return NotFound(id);
 
@@ -131,7 +131,7 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserDTO>> Login([FromBody] UserDTO user)
+    public async Task<ActionResult<UserDto>> Login([FromBody] UserDto user)
     {
         try
         {

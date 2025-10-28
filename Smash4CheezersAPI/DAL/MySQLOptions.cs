@@ -1,18 +1,18 @@
 ﻿namespace DAL;
 
-public class MySQLOptions
+public class MySqlOptions
 {
-    private static MySQLOptions _options;
+    private static MySqlOptions _options;
 
-    private MySQLOptions()
+    private MySqlOptions()
     {
     }
 
-    public static MySQLOptions Options
+    public static MySqlOptions Options
     {
         get
         {
-            if (_options == null) _options = new MySQLOptions();
+            if (_options == null) _options = new MySqlOptions();
             return _options;
         }
     }

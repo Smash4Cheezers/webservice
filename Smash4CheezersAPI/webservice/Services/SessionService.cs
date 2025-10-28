@@ -7,10 +7,10 @@ namespace webservice.Services;
 
 public class SessionService : ISessionService
 {
-       private readonly ISessionDAO _sessionDao;
+       private readonly ISessionDao _sessionDao;
        private readonly ITokenHelper _tokenHelper;
        
-       public SessionService(ISessionDAO sessionDao, ITokenHelper tokenHelper)
+       public SessionService(ISessionDao sessionDao, ITokenHelper tokenHelper)
        {
               _sessionDao = sessionDao;
               _tokenHelper = tokenHelper;

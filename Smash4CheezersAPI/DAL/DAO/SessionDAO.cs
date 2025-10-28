@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace DAL.DAO;
 
 /// <inheritdoc />
-public class SessionDAO : ISessionDAO
+public class SessionDao : ISessionDao
 {
        private readonly S4CDbContext _context;
 
-       public SessionDAO(S4CDbContext context)
+       public SessionDao(S4CDbContext context)
        {
               _context = context;
        }

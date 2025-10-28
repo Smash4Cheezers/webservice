@@ -1,6 +1,6 @@
 ﻿namespace webservice.DTO;
 
-public class UserDTO
+public class UserDto
 {
     public int Id { get; set; }
 
@@ -9,5 +9,5 @@ public class UserDTO
     public string Password { get; set; }
 
     public string Email { get; set; }
-    public CharacterDTO? Character { get; set; }
+    public CharacterDto? Character { get; set; }
 }

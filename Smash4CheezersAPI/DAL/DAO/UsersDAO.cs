@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.DAO;
 
-/// <inheritdoc cref="IUsersDAO" />
-public class UsersDAO : IUsersDAO
+/// <inheritdoc cref="IUsersDao" />
+public class UsersDao : IUsersDao
 {
     private readonly S4CDbContext _context;
 
 
-    public UsersDAO(S4CDbContext context)
+    public UsersDao(S4CDbContext context)
     {
         _context = context;
     }

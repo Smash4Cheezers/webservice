@@ -21,9 +21,9 @@ builder.Services.AddDbContext<S4CDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SmashForCheezers"), serverVersion));
 
 // DAO
-builder.Services.AddScoped<IUsersDAO, UsersDAO>();
-builder.Services.AddScoped<ICharactersDAO, CharactersDAO>();
-builder.Services.AddScoped<ISessionDAO, SessionDAO>();
+builder.Services.AddScoped<IUsersDao, UsersDao>();
+builder.Services.AddScoped<ICharactersDao, CharactersDao>();
+builder.Services.AddScoped<ISessionDao, SessionDao>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.DAO;
 
 /// <inheritdoc />
-public class CharactersDAO : ICharactersDAO
+public class CharactersDao : ICharactersDao
 {
     private readonly S4CDbContext _context;
 
@@ -14,7 +14,7 @@ public class CharactersDAO : ICharactersDAO
     ///     Constructor link to table from the db
     /// </summary>
     /// <param name="context"></param>
-    public CharactersDAO(S4CDbContext context)
+    public CharactersDao(S4CDbContext context)
     {
         _context = context;
     }
