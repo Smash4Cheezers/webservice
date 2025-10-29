@@ -3,6 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
+/// <summary>
+/// Represents the Entity Framework Core database context for the application.
+/// </summary>
+/// <remarks>
+/// This class is responsible for configuring and managing the database connection, entity relationships, and
+/// database schema mappings for the application. It inherits from the <see cref="DbContext"/> class.
+/// </remarks> 
 public class S4CDbContext : DbContext
 {
     public S4CDbContext(DbContextOptions<S4CDbContext> options) : base(options)
@@ -60,6 +67,7 @@ public class S4CDbContext : DbContext
             entity.Property(x => x.Name).IsRequired();
             entity.Property(x => x.Description).IsRequired();
             entity.Property(x => x.WeightCategory).IsRequired();
+            entity.Property(x => x.SerieId).IsRequired();
             entity.Navigation(x => x.Serie);
         });
     }

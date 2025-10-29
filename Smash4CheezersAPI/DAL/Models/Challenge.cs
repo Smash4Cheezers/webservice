@@ -53,7 +53,7 @@ public class Challenge
        /// It is mandatory and corresponds to the primary key of the related Serie entity.
        /// </remarks>
        [ForeignKey(nameof(Serie))]
-       [Required] public int? SerieId { get; set; }
+       public int? SerieId { get; set; }
 
        /// <summary>
        /// Gets or sets the associated series entity for the challenge.

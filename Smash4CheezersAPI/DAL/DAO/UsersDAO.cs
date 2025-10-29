@@ -37,7 +37,7 @@ public class UsersDao : IUsersDao
     {
         var u = _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
         await _context.SaveChangesAsync(); 
-        return u.Entity.Id != null ? u.Entity.Id : throw new NotFoundException("User not found");
+        return u.Entity.Id;
     }
 
     public async Task<User> GetUser(int id)
