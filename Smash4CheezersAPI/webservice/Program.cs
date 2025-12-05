@@ -12,11 +12,11 @@ using webservice.Controllers.Interfaces.Services;
 using webservice.Helpers;
 using webservice.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
+MySqlServerVersion serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 builder.Services.AddDbContext<S4CDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SmashForCheezers"), serverVersion));
 
@@ -59,7 +59,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

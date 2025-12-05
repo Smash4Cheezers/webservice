@@ -9,85 +9,88 @@ namespace webservice.Services;
 
 public class UserService : IUserService
 {
-    private readonly IPasswordHasher<User> _passwordHasher;
-    private readonly IUsersDao _usersDao;
-    private readonly ICharacterService _characterService;
+       private readonly IPasswordHasher<User> _passwordHasher;
+       private readonly IUsersDao _usersDao;
+       private readonly ICharacterService _characterService;
 
-    /// <summary>
-    /// Dependencies injection
-    /// </summary>
-    /// <param name="usersDao">DAO injected</param>
-    /// <param name="passwordHasher">Tool for hash a password and verify a password</param>
-    /// <param name="characterService">Needed to access data from the Character table</param>
-    public UserService(IUsersDao usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
-    {
-        _usersDao = usersDao;
-        _passwordHasher = passwordHasher;
-        _characterService = characterService;
-    }
+       /// <summary>
+       /// Dependencies injection
+       /// </summary>
+       /// <param name="usersDao">DAO injected</param>
+       /// <param name="passwordHasher">Tool for hash a password and verify a password</param>
+       /// <param name="characterService">Needed to access data from the Character table</param>
+       public UserService(IUsersDao usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
+       {
+              _usersDao = usersDao;
+              _passwordHasher = passwordHasher;
+              _characterService = characterService;
+       }
 
-    public async Task<User> CreateUser(UserDto user)
-    {
-        User u = new User
-        {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email,
-            Password = user.Password = _passwordHasher.HashPassword(null, user.Password)
-        };
-        return await _usersDao.Create(u) ?? throw new UserException("Impossible to create the user");
-    }
+       public async Task<User> CreateUser(UserDto user)
+       {
+              User u = new User
+              {
+                     Id = user.Id,
+                     Username = user.Username,
+                     Email = user.Email,
+                     Password = _passwordHasher.HashPassword(null, user.Password)
+              };
+              return await _usersDao.Create(u) ?? throw new UserException("Impossible to create the user");
+       }
 
-    public async Task<User?> LoginUser(UserDto user)
-    {
-        User u = await _usersDao.GetUser(user.Id);
-        if (_passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) != PasswordVerificationResult.Success)
-        {
-                throw new UserException("Current password is incorrect");
-        }
-        
-        return u;
-    }
+       public async Task<User?> LoginUser(UserDto user)
+       {
+              User u = await _usersDao.GetUser(user.Id);
+              if (_passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) !=
+                  PasswordVerificationResult.Success)
+              {
+                     throw new UserException("Current password is incorrect");
+              }
 
-    public async Task<IEnumerable<UserDto?>> GetAllUsers()
-    {
-        IEnumerable<User?> u = await _usersDao.GetUsers();
-        return u.Select(user => new UserDto()
-        {
-            Id = user!.Id,
-            Username = user.Username,
-            Email = user.Email
-        }) ?? throw new UserException("No users found");
-    }
+              return u;
+       }
 
-    public async Task<UserDto> GetUserById(int id)
-    {
-        User user = await _usersDao.GetUser(id);
-        if(user == null) throw new UserException("User not found");
-        UserDto userDto = new UserDto
-        {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email,
-            Character = await _characterService.GetCharacterById(user.CharacterId == null ? 0 : user.CharacterId.Value)
-        };
-        return userDto;
-    }
+       public async Task<IEnumerable<UserDto?>> GetAllUsers()
+       {
+              IEnumerable<User?> u = await _usersDao.GetUsers();
+              return u.Select(user => new UserDto
+              {
+                     Id = user!.Id,
+                     Username = user.Username,
+                     Email = user.Email
+              }) ?? throw new UserException("No users found");
+       }
 
-    public async Task<int> DeleteUser(int id)
-    {
-        return await _usersDao.Delete(id);
-    }
+       public async Task<UserDto> GetUserById(int id)
+       {
+              User user = await _usersDao.GetUser(id);
+              if (user == null) throw new UserException("User not found");
+              UserDto userDto = new UserDto
+              {
+                     Id = user.Id,
+                     Username = user.Username,
+                     Email = user.Email,
+                     Character = user.CharacterId == null
+                            ? null
+                            : await _characterService.GetCharacterById(user.CharacterId.Value)
+              };
+              return userDto;
+       }
 
-    public async Task<User?> UpdateUserInformations(int id, UserDto user)
-    {
-        User u = new User
-        {
-            Id = id,
-            Username = user.Username,
-            Email = user.Email,
-            Password = user.Password = _passwordHasher.HashPassword(null, user.Password)
-        };
-        return await _usersDao.Update(u);
-    }
+       public async Task<User> DeleteUser(int id)
+       {
+              return await _usersDao.Delete(id);
+       }
+
+       public async Task<User?> UpdateUserInformations(int id, UserDto user)
+       {
+              User u = new User
+              {
+                     Id = id,
+                     Username = user.Username,
+                     Email = user.Email,
+                     Password = _passwordHasher.HashPassword(null, user.Password)
+              };
+              return await _usersDao.Update(u);
+       }
 }

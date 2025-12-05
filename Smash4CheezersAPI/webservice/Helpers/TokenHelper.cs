@@ -23,18 +23,18 @@ public class TokenHelper : ITokenHelper
     
     public string GenerateTokenJwt(string username)
     {
-        var secretKey = _configuration.GetSection("Jwt:Key") ?? throw new NoNullAllowedException();
+        IConfigurationSection secretKey = _configuration.GetSection("Jwt:Key") ?? throw new NoNullAllowedException();
 
-        var key = new SymmetricSecurityKey(Convert.FromBase64String(secretKey.Value ?? throw new NoNullAllowedException()));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Convert.FromBase64String(secretKey.Value ?? throw new NoNullAllowedException()));
+        SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        Claim[] claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var token = new JwtSecurityToken
+        JwtSecurityToken token = new JwtSecurityToken
         (
             issuer: "myApp",
             audience: "http://localhost:5183/api/",

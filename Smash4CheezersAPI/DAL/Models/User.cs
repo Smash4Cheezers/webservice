@@ -50,4 +50,11 @@ public class User
     /// Represents a character model in the data layer, containing properties related to character attributes.
     /// </summary>
     public Character? Character { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of sessions associated with the user.
+    /// This property establishes a one-to-many relationship between the User and Session entities,
+    /// where a user can have multiple active or historical sessions.
+    /// </summary>
+    public ICollection<Session> Sessions { get; set; }
 }

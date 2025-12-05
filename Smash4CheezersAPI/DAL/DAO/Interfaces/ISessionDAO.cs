@@ -14,6 +14,11 @@ public interface ISessionDao
        /// <returns>The created <see cref="Session"/> object containing session details.</returns>
        Task<Session> CreateSession(Session session);
 
+       /// <summary>
+       /// Get a session by its token
+       /// </summary>
+       /// <param name="token">token provided</param>
+       /// <returns>a session</returns>
        Task<Session?> GetSessionByToken(string token);
 
        /// <summary>

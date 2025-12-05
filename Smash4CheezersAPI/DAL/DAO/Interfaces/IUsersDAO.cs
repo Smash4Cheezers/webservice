@@ -26,7 +26,7 @@ public interface IUsersDao
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <exception cref="NoNullAllowedException"></exception>
-    Task<int> Delete(int id);
+    Task<User> Delete(int id);
 
     /// <summary>
     ///     Retrieve a user by an id

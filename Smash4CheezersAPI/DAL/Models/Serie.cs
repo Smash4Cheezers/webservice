@@ -19,4 +19,13 @@ public class Serie
        /// Name of the serie
        /// </summary>
        [Required] public string Name { get; set; }
+
+       /// <summary>
+       /// Collection of challenges associated with the serie.
+       /// </summary>
+       /// <remarks>
+       /// This property represents the relationship between a series and the challenges
+       /// that belong to it. Each challenge in the collection is linked to the current serie.
+       /// </remarks>
+       public ICollection<Challenge> Challenges { get; set; }
 }

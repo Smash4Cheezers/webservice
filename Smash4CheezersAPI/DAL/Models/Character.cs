@@ -40,4 +40,6 @@ public class Character
     /// Represents the serie to which the character belongs.
     /// </summary>
     public Serie Serie {get; set;} = null!;
+    
+    public ICollection<Challenge> Challenges { get; set; }
 }

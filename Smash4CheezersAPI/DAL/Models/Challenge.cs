@@ -56,10 +56,29 @@ public class Challenge
        public int? SerieId { get; set; }
 
        /// <summary>
+       /// Gets or sets the identifier for the related character entity.
+       /// </summary>
+       /// <remarks>
+       /// This property serves as a foreign key linking to the Character entity and may be null.
+       /// </remarks>
+       [ForeignKey(nameof(Character))]
+       public int? CharacterId { get; set; }
+
+       /// <summary>
        /// Gets or sets the associated series entity for the challenge.
        /// </summary>
        /// <remarks>
        /// This property establishes a relationship between the Challenge and Serie entities, linking a challenge to its respective series.
        /// </remarks>
        public Serie? Serie { get; set; }
+
+       /// <summary>
+       /// Gets or sets the associated character for the challenge.
+       /// </summary>
+       /// <remarks>
+       /// This property represents the relationship between a challenge and a character.
+       /// It is a navigational property used to access the character details linked to a specific challenge.
+       /// The foreign key for this relationship is <c>CharacterId</c>.
+       /// </remarks>
+       public Character? Character { get; set; }
 }

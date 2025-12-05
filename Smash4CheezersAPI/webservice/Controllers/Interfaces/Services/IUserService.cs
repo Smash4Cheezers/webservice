@@ -34,7 +34,7 @@ public interface IUserService
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>User deleted</returns>
-    Task<int> DeleteUser(int id);
+    Task<User> DeleteUser(int id);
 
     /// <summary>
     /// Update user informations

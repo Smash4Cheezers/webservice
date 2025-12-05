@@ -27,7 +27,7 @@ public class CharacterController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Character>> GetCharacter(int id)
     {
-        var character = await _context.Characters.FindAsync(id);
+        Character? character = await _context.Characters.FindAsync(id);
 
         if (character == null) return NotFound();
 
@@ -72,7 +72,7 @@ public class CharacterController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCharacter(int id)
     {
-        var character = await _context.Characters.FindAsync(id);
+        Character? character = await _context.Characters.FindAsync(id);
         if (character == null) return NotFound();
 
         _context.Characters.Remove(character);

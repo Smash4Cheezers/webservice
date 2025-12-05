@@ -3,10 +3,13 @@ using DAL.DAO.Interfaces;
 using DAL.Exceptions;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DAL.DAO;
 
-/// <inheritdoc cref="IUsersDao" />
+/// <summary>
+/// Implements the data access operations for the User entity
+/// </summary>
 public class UsersDao : IUsersDao
 {
     private readonly S4CDbContext _context;
@@ -16,33 +19,35 @@ public class UsersDao : IUsersDao
     {
         _context = context;
     }
-
-
+    
     public async Task<User?> Create(User user)
     {
-        var u = await _context.Users.AddAsync(user);
+        EntityEntry<User> u = await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
+        _context.Entry(user).State = EntityState.Detached;
         return u.Entity;
     }
 
 
     public async Task<User?> Update(User user)
     {
-        var u = _context.Users.Update(user);
+        EntityEntry<User> u = _context.Users.Update(user);
         await _context.SaveChangesAsync();
+        _context.Entry(u).State = EntityState.Detached;
         return u.Entity;
     }
 
-    public async Task<int> Delete(int id)
+    public async Task<User> Delete(int id)
     {
-        var u = _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
+        EntityEntry<User> u = _context.Users.Remove(await _context.Users.FindAsync(id) ?? throw new NoNullAllowedException());
         await _context.SaveChangesAsync(); 
-        return u.Entity.Id;
+        _context.Entry(u.Entity).State = EntityState.Detached;
+        return u.Entity;
     }
 
     public async Task<User> GetUser(int id)
     {
-        var user = await _context.Users.Include(u => u.Character).FirstOrDefaultAsync(u => u.Id == id);
+        User? user = await _context.Users.AsNoTracking().Include(u => u.Character).FirstOrDefaultAsync(u => u.Id == id);
 
         if (user == null) throw new NotFoundException("User not found");
         return user;
@@ -50,12 +55,12 @@ public class UsersDao : IUsersDao
 
     public async Task<IEnumerable<User?>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        return await _context.Users.AsNoTracking().ToListAsync();
     }
 
     public async Task<User?> GetUsersByCharacter(int id)
     {
-        var u = _context.Users.Include(u => u.Character).FirstOrDefaultAsync(u => u.Id == id);
+        Task<User?>? u = _context.Users.AsNoTracking().Include(u => u.Character).FirstOrDefaultAsync(u => u.Id == id);
         if (u == null) throw new NotFoundException("Currently no users found");
         return await u;
     }
