@@ -21,8 +21,12 @@ public class SessionDao : ISessionDao
 
        public async Task<Session> CreateSession(Session session)
        {
+              if(session.User != null)
+                     _context.Users.Attach(session.User);
+              
               EntityEntry<Session> s = await _context.Sessions.AddAsync(session);
               await _context.SaveChangesAsync();
+              
               _context.Entry(s.Entity).State = EntityState.Detached;
               return s.Entity;
        }
@@ -59,17 +63,15 @@ public class SessionDao : ISessionDao
                      _context.Sessions.Remove(await _context.Sessions.FindAsync(id) ??
                                               throw new NoNullAllowedException());
               await _context.SaveChangesAsync();
-              _context.Entry(session.Entity).State = EntityState.Detached;
               return session.Entity != null
                      ? session.Entity
                      : throw new NotFoundException("Session is already deleted");
        }
 
-       public async Task<Session?> UpdateSession(Session session)
+       public async Task<Session> UpdateSession(Session session)
        {
               EntityEntry<Session> s = _context.Sessions.Update(session);
               await _context.SaveChangesAsync();
-              _context.Entry(s.Entity).State = EntityState.Detached;
               return s.Entity;
        }
 }

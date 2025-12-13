@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using webservice.Controllers.Interfaces.Helpers;
 using webservice.Controllers.Interfaces.Services;
 using webservice.Helpers;
 using webservice.Services;
+using webservice.Services.Interfaces.Helpers;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -24,11 +24,14 @@ builder.Services.AddDbContext<S4CDbContext>(options =>
 builder.Services.AddScoped<IUsersDao, UsersDao>();
 builder.Services.AddScoped<ICharactersDao, CharactersDao>();
 builder.Services.AddScoped<ISessionDao, SessionDao>();
+builder.Services.AddScoped<ISerieDAO, SerieDAO>();
+builder.Services.AddScoped<IChallengeDAO, ChallengeDAO>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<ISerieService, SerieService>();
 
 // Helpers
 builder.Services.AddScoped<ITokenHelper, TokenHelper>();
@@ -58,6 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
+
 
 WebApplication app = builder.Build();
 

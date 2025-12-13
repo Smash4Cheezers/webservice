@@ -56,7 +56,7 @@ public interface ISessionDao
        /// </summary>
        /// <param name="session">The session object containing updated information.</param>
        /// <returns>The updated <see cref="Session"/> object with the applied changes, or null if the session does not exist.</returns>
-       Task<Session?> UpdateSession(Session session);
+       Task<Session> UpdateSession(Session session);
        
        
 }

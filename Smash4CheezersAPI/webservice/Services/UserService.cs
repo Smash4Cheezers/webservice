@@ -11,6 +11,7 @@ public class UserService : IUserService
 {
        private readonly IPasswordHasher<User> _passwordHasher;
        private readonly IUsersDao _usersDao;
+       private readonly ISessionService _sessionService;
        private readonly ICharacterService _characterService;
 
        /// <summary>
@@ -19,11 +20,14 @@ public class UserService : IUserService
        /// <param name="usersDao">DAO injected</param>
        /// <param name="passwordHasher">Tool for hash a password and verify a password</param>
        /// <param name="characterService">Needed to access data from the Character table</param>
-       public UserService(IUsersDao usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService)
+       /// <param name="sessionService"></param>
+       public UserService(IUsersDao usersDao, IPasswordHasher<User> passwordHasher, ICharacterService characterService,
+              ISessionService sessionService)
        {
               _usersDao = usersDao;
               _passwordHasher = passwordHasher;
               _characterService = characterService;
+              _sessionService = sessionService;
        }
 
        public async Task<User> CreateUser(UserDto user)
@@ -38,16 +42,27 @@ public class UserService : IUserService
               return await _usersDao.Create(u) ?? throw new UserException("Impossible to create the user");
        }
 
-       public async Task<User?> LoginUser(UserDto user)
+       public async Task<UserDto?> LoginUser(AuthDTO user)
        {
-              User u = await _usersDao.GetUser(user.Id);
+              User u = await _usersDao.GetUserByUsername(user.Username) ??
+                       throw new UserException("Username not found");
               if (_passwordHasher.VerifyHashedPassword(u, u.Password, user.Password) !=
                   PasswordVerificationResult.Success)
               {
                      throw new UserException("Current password is incorrect");
               }
 
-              return u;
+              await _sessionService.CreateSession(u);
+              UserDto userDto = new()
+              {
+                     Id = u.Id,
+                     Username = u.Username,
+                     Email = u.Email,
+                     Character = u.CharacterId == null
+                            ? null
+                            : await _characterService.GetCharacterById(u.CharacterId.Value)
+              };
+              return userDto;
        }
 
        public async Task<IEnumerable<UserDto?>> GetAllUsers()
@@ -57,7 +72,7 @@ public class UserService : IUserService
               {
                      Id = user!.Id,
                      Username = user.Username,
-                     Email = user.Email
+                     Email = user.Email,
               }) ?? throw new UserException("No users found");
        }
 

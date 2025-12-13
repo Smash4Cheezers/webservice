@@ -38,6 +38,7 @@ public class S4CDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.Username).IsRequired();
+            entity.HasAlternateKey(x => x.Username);
             entity.Property(x => x.Password).IsRequired();
             entity.Property(x => x.Email).IsRequired();
             entity.HasAlternateKey(x => x.Email);
@@ -65,6 +66,7 @@ public class S4CDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.Name).IsRequired();
+            entity.HasIndex(x => x.Name);
         });
         modelBuilder.Entity<Challenge>(entity =>
         {
@@ -78,6 +80,8 @@ public class S4CDbContext : DbContext
             entity.Property(x => x.CharacterId).IsRequired(false);
             entity.HasOne(x => x.Serie).WithMany(s => s.Challenges).HasForeignKey(x => x.SerieId).IsRequired(false);
             entity.HasOne(x => x.Character).WithMany(ch => ch.Challenges).HasForeignKey(x => x.CharacterId).IsRequired(false);
+            entity.HasIndex(x => x.CharacterId);
+            entity.HasIndex(x => x.SerieId);
         });
     }
 

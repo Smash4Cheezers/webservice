@@ -11,9 +11,9 @@ public interface ISessionService
        /// <summary>
        /// Creates a new session for a user with an associated token and expiration time.
        /// </summary>
-       /// <param name="session">The <see cref="Session"/> object containing the user's session details to be created.</param>
+       /// <param name="user"></param>
        /// <returns>A task representing the asynchronous operation. The task result contains the created <see cref="Session"/> object if successful, otherwise null.</returns>
-       Task<Session?> CreateSession(Session session);
+       Task<Session?> CreateSession(User user);
 
        /// <summary>
        /// Retrieves a session based on the specified token.
@@ -37,7 +37,7 @@ public interface ISessionService
        /// </summary>
        /// <param name="session">The session object containing updated information.</param>
        /// <returns>The updated session object if the operation succeeds; otherwise, null.</returns>
-       Task<Session?> UpdateSession(Session session);
+       Task<Session> UpdateSession(Session session);
 
        /// <summary>
        /// Deletes a session by its unique identifier.

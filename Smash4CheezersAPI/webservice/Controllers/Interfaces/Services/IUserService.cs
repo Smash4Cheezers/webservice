@@ -50,5 +50,5 @@ public interface IUserService
     /// <param name="user">User informations from client-side</param>
     /// <exception cref="UserException">Returns a not found</exception>
     /// <returns>A token if informations are true and existing, a 404 if not</returns>
-    public Task<User?> LoginUser(UserDto user);
+    public Task<UserDto?> LoginUser(AuthDTO user);
 }

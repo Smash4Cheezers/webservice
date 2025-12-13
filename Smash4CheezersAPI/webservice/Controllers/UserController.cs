@@ -1,7 +1,7 @@
+using DAL.Exceptions;
 using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using webservice.Controllers.Interfaces.Helpers;
 using webservice.Controllers.Interfaces.Services;
 using webservice.DTO;
 using webservice.Exceptions;
@@ -13,6 +13,7 @@ namespace webservice.Controllers;
 /// deletion, and authentication. It acts as a middle layer between the HTTP requests and the business logic
 /// in the service layer.
 /// </summary>
+[Authorize(AuthenticationSchemes = "Bearer")]
 [Route("api/users")]
 [ApiController]
 public class UserController : ControllerBase
@@ -137,17 +138,62 @@ public class UserController : ControllerBase
        [AllowAnonymous]
        [ProducesResponseType(StatusCodes.Status200OK)]
        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-       public async Task<ActionResult<UserDto>> Login([FromBody] UserDto user)
+       public async Task<ActionResult<UserDto>> Login([FromBody] AuthDTO user)
        {
               try
               {
-                     User? u = await _userService.LoginUser(user);
-                     await _sessionService.CreateSession(new Session() { User = u!, UserId = u!.Id });
-                     return Ok($"Login successful, hello {u.Username} !");
+                     UserDto? u = await _userService.LoginUser(user);
+                     return Ok($"Login successful, hello {u!.Username} !");
               }
-              catch (Exception)
+              catch (DuplicateEntryException ex)
               {
-                     throw new UserException("Les identifiants envoyés sont incorrects");
+                     return Conflict(ex.Message);
               }
+              catch (Exception e)
+              {
+                     return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+              }
+       }
+
+       [HttpPost("logout")]
+       [ProducesResponseType(StatusCodes.Status204NoContent)]
+       [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+       [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+       public async Task<ActionResult<Session>> Logout([FromHeader] string token)
+       {
+              ActionResult result;
+              Session? session = await _sessionService.GetSessionByToken(token);
+              if(session == null)
+                     result = Unauthorized(session);
+              else
+              {
+                     await _sessionService.DeleteSession(session.Id);
+                     result = NoContent();
+              }
+              return result;
+       }
+
+       [HttpPost("refresh")]
+       [ProducesResponseType(StatusCodes.Status204NoContent)]
+       [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+       [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+       public async Task<ActionResult<Session>> RefreshSession()
+       {
+              ActionResult result;
+              string authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+              if(string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
+                     return Unauthorized();
+              
+              string token = authHeader.Substring("Bearer ".Length).Trim();
+              Session? session = await _sessionService.GetSessionByToken(token);
+              
+              if(session == null)
+                     result = Unauthorized(session);
+              else
+              {
+                     await _sessionService.UpdateSession(session);
+                     result = NoContent();
+              }
+              return result;
        }
 }

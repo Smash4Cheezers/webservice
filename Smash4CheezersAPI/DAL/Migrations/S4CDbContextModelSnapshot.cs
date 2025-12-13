@@ -96,9 +96,11 @@ namespace DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name");
 
                     b.ToTable("series", (string)null);
                 });
@@ -149,11 +151,13 @@ namespace DAL.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasAlternateKey("Email");
+
+                    b.HasAlternateKey("Username");
 
                     b.HasIndex("CharacterId");
 

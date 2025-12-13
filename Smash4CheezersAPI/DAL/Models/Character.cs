@@ -39,7 +39,7 @@ public class Character
     /// <summary>
     /// Represents the serie to which the character belongs.
     /// </summary>
-    public Serie Serie {get; set;} = null!;
+    public Serie Serie {get; set;}
     
     public ICollection<Challenge> Challenges { get; set; }
 }

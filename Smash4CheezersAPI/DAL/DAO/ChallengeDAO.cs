@@ -23,7 +23,6 @@ public class ChallengeDAO : IChallengeDAO
               if (challenge == null) throw new ArgumentNullException(nameof(challenge));
               EntityEntry<Challenge> c = _context.Challenges.Add(challenge);
               await _context.SaveChangesAsync();
-              _context.Entry(c.Entity).State = EntityState.Detached;
               return c.Entity;
        }
 
@@ -31,7 +30,6 @@ public class ChallengeDAO : IChallengeDAO
        {
               EntityEntry<Challenge> c = _context.Challenges.Update(challenge);
               await _context.SaveChangesAsync();
-              _context.Entry(c.Entity).State = EntityState.Detached;
               return c.Entity;
        }
 
@@ -54,7 +52,6 @@ public class ChallengeDAO : IChallengeDAO
                                     throw new NotFoundException("Challenge not found");
               _context.Challenges.Remove(challenge);
               await _context.SaveChangesAsync();
-              _context.Entry(challenge).State = EntityState.Detached;
               return challenge;
        }
 

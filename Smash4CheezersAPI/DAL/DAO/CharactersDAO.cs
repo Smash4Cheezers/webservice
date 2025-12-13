@@ -28,7 +28,6 @@ public class CharactersDao : ICharactersDao
                      throw new ArgumentNullException(nameof(character));
               EntityEntry<Character> c = _context.Characters.Add(character);
               await _context.SaveChangesAsync();
-              _context.Entry(c.Entity).State = EntityState.Detached;
               return c.Entity;
        }
 
@@ -38,7 +37,6 @@ public class CharactersDao : ICharactersDao
                      throw new ArgumentNullException(nameof(character));
               EntityEntry<Character> c = _context.Characters.Update(character);
               await _context.SaveChangesAsync();
-              _context.Entry(c.Entity).State = EntityState.Detached;
               return c.Entity;
        }
 
@@ -47,15 +45,14 @@ public class CharactersDao : ICharactersDao
               Character? character = await _context.Characters.FindAsync(id);
               if (character == null)
                      throw new KeyNotFoundException("Character not found");
-              _context.Characters.Remove(character ?? throw new NullReferenceException());
+              _context.Characters.Remove(character);
               await _context.SaveChangesAsync();
-              _context.Entry(character).State = EntityState.Detached;
               return character.Id;
        }
 
        public async Task<IEnumerable<Character>> GetAll()
        {
-              return await _context.Characters.AsNoTracking().ToListAsync();
+              return await _context.Characters.AsNoTracking().Include(s => s.Serie).OrderBy(character => character.Id).ToListAsync();
        }
 
        public async Task<Character> GetCharacterById(int id)
