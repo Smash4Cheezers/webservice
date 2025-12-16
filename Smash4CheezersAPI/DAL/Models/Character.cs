@@ -28,6 +28,12 @@ public class Character
     /// </summary>
     [Required]
     public int Weight { get; set; }
+    
+    /// <summary>
+    /// Most common color of the character
+    /// </summary>
+    [Required]
+    public string Color { get; set; }
 
     /// <summary>
     ///   its serie id

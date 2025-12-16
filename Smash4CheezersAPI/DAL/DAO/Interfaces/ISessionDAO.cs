@@ -19,7 +19,7 @@ public interface ISessionDao
        /// </summary>
        /// <param name="token">token provided</param>
        /// <returns>a session</returns>
-       Task<Session?> GetSessionByToken(string token);
+       Task<Session> GetSessionByToken(string token);
 
        /// <summary>
        /// Retrieves a session associated with a specific user by the user's identifier.
@@ -57,6 +57,11 @@ public interface ISessionDao
        /// <param name="session">The session object containing updated information.</param>
        /// <returns>The updated <see cref="Session"/> object with the applied changes, or null if the session does not exist.</returns>
        Task<Session> UpdateSession(Session session);
-       
-       
+
+
+       /// <summary>
+       /// Delete a session by its refresh token
+       /// </summary>
+       /// <param name="refreshToken">refresh token</param>
+       Task DeleteSessionByToken(string refreshToken);
 }

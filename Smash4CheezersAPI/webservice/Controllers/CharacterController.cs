@@ -6,7 +6,7 @@ using webservice.DTO;
 
 namespace webservice.Controllers;
 
-[Authorize]
+[Authorize(AuthenticationSchemes = "Bearer")]
 [Route("api/characters")]
 [ApiController]
 public class CharacterController : ControllerBase

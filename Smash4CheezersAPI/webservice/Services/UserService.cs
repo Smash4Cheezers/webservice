@@ -52,7 +52,6 @@ public class UserService : IUserService
                      throw new UserException("Current password is incorrect");
               }
 
-              await _sessionService.CreateSession(u);
               UserDto userDto = new()
               {
                      Id = u.Id,

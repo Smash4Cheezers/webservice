@@ -27,11 +27,10 @@ public class SessionDao : ISessionDao
               EntityEntry<Session> s = await _context.Sessions.AddAsync(session);
               await _context.SaveChangesAsync();
               
-              _context.Entry(s.Entity).State = EntityState.Detached;
               return s.Entity;
        }
 
-       public async Task<Session?> GetSessionByToken(string token)
+       public async Task<Session> GetSessionByToken(string token)
        {
               Session? session = await _context.Sessions.AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.Token == token);
 
@@ -73,5 +72,12 @@ public class SessionDao : ISessionDao
               EntityEntry<Session> s = _context.Sessions.Update(session);
               await _context.SaveChangesAsync();
               return s.Entity;
+       }
+
+       public async Task DeleteSessionByToken(string refreshToken)
+       {
+              _context.Sessions.Remove(await _context.Sessions.FindAsync(refreshToken) ??
+                                                     throw new NotFoundException("Session not found"));
+              await _context.SaveChangesAsync();
        }
 }

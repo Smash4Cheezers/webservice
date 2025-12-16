@@ -81,9 +81,11 @@ public class UserController : ControllerBase
               else
               {
                      User u = await _userService.CreateUser(user!);
-                     UserDto uDto = new UserDto { Id = u.Id, Username = u.Username, Email = u.Email, Password = String.Empty};
+                     UserDto uDto = new UserDto
+                            { Id = u.Id, Username = u.Username, Email = u.Email, Password = String.Empty };
                      res = CreatedAtAction(nameof(GetUser), new { id = u.Id }, uDto);
               }
+
               return res;
        }
 
@@ -107,6 +109,7 @@ public class UserController : ControllerBase
               {
                      res = NotFound();
               }
+
               return res;
        }
 
@@ -138,62 +141,110 @@ public class UserController : ControllerBase
        [AllowAnonymous]
        [ProducesResponseType(StatusCodes.Status200OK)]
        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+       [ProducesResponseType(StatusCodes.Status500InternalServerError)]
        public async Task<ActionResult<UserDto>> Login([FromBody] AuthDTO user)
        {
+              ActionResult<UserDto> res;
               try
               {
                      UserDto? u = await _userService.LoginUser(user);
-                     return Ok($"Login successful, hello {u!.Username} !");
+                     string accessToken = _sessionService.GenerateAccessToken(u!);
+                     string refreshToken = _sessionService.GenerateRefreshToken();
+                     await _sessionService.CreateSession(u!, refreshToken);
+
+                     Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+                     {
+                            HttpOnly = true,
+                            Secure = true,
+                            Expires = DateTime.UtcNow.AddDays(7),
+                            SameSite = SameSiteMode.None
+                     });
+                     Response.Headers.Append("X-Access-Token", accessToken);
+
+                     res = Ok(new { accessToken });
               }
               catch (DuplicateEntryException ex)
               {
-                     return Conflict(ex.Message);
+                     res = Conflict(ex.Message);
               }
               catch (Exception e)
               {
-                     return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+                     res = StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
               }
+
+              return res;
        }
 
        [HttpPost("logout")]
        [ProducesResponseType(StatusCodes.Status204NoContent)]
        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-       public async Task<ActionResult<Session>> Logout([FromHeader] string token)
+       public async Task<ActionResult<Session>> Logout()
        {
-              ActionResult result;
-              Session? session = await _sessionService.GetSessionByToken(token);
-              if(session == null)
-                     result = Unauthorized(session);
-              else
+              if (Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
               {
-                     await _sessionService.DeleteSession(session.Id);
-                     result = NoContent();
+                     await _sessionService.DeleteByToken(refreshToken);
               }
-              return result;
+
+              Response.Cookies.Delete("refreshToken", new CookieOptions
+              {
+                     Path = "/api/users/refresh"
+              });
+
+              return NoContent();
        }
 
        [HttpPost("refresh")]
+       [AllowAnonymous]
        [ProducesResponseType(StatusCodes.Status204NoContent)]
        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-       public async Task<ActionResult<Session>> RefreshSession()
+       public async Task<IActionResult> RefreshSession()
        {
-              ActionResult result;
-              string authHeader = HttpContext.Request.Headers["Authorization"].ToString();
-              if(string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
-                     return Unauthorized();
-              
-              string token = authHeader.Substring("Bearer ".Length).Trim();
-              Session? session = await _sessionService.GetSessionByToken(token);
-              
-              if(session == null)
-                     result = Unauthorized(session);
-              else
+              IActionResult result;
+              try
               {
-                     await _sessionService.UpdateSession(session);
-                     result = NoContent();
+                     if (!Request.Cookies.TryGetValue("refreshToken", out string? refreshToken) ||
+                         string.IsNullOrEmpty(refreshToken))
+                     {
+                            result = Unauthorized("No refresh token provided");
+                     }
+                     else
+                     {
+                            Session session = await _sessionService.RefreshSession(refreshToken);
+                            session.Expiration = DateTime.UtcNow.AddDays(7);
+
+                            Response.Cookies.Append("refreshToken", session.Token, new CookieOptions
+                            {
+                                   HttpOnly = true,
+                                   Secure = true,
+                                   SameSite = SameSiteMode.None,
+                                   Expires = session.Expiration,
+                            });
+
+                            UserDto userDto = new()
+                            {
+                                   Id = session.UserId,
+                                   Username = session.User.Username
+                            };
+                            string newAccessToken = _sessionService.GenerateAccessToken(userDto);
+
+                            result = Ok(new
+                            {
+                                   accessToken = newAccessToken,
+                            });
+                     }
               }
+              catch (NotFoundException)
+              {
+                     result = Unauthorized("Invalid refresh token");
+              }
+              catch (Exception ex)
+              {
+                     result = StatusCode(StatusCodes.Status500InternalServerError,
+                            "Internal server error: " + ex.Message);
+              }
+
               return result;
        }
 }

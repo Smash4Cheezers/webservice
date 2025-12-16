@@ -1,7 +1,10 @@
 ﻿using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using DAL.Models;
 using Microsoft.IdentityModel.Tokens;
+using webservice.DTO;
 using webservice.Exceptions;
 using webservice.Services.Interfaces.Helpers;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -22,7 +25,7 @@ public class TokenHelper : ITokenHelper
               _configuration = configuration;
        }
 
-       public string GenerateTokenJwt(string username)
+       public string GenerateAccessToken(UserDto userDto)
        {
               IConfigurationSection secretKey =
                      _configuration.GetSection("Jwt:Key") ?? throw new NoNullAllowedException();
@@ -34,30 +37,25 @@ public class TokenHelper : ITokenHelper
 
               Claim[] claims = new[]
               {
-                     new Claim(JwtRegisteredClaimNames.Sub, username),
-                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                     new Claim(JwtRegisteredClaimNames.Sub, userDto.Id.ToString()),
+                     new Claim(ClaimTypes.Name, userDto.Username),
+                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
               };
 
               JwtSecurityToken token = new JwtSecurityToken
               (
                      issuer: "myApp",
-                     audience: "http://localhost:5183/api/",
+                     audience: "https://localhost:7020/api/",
                      claims: claims,
-                     expires: DateTime.Now.AddDays(2),
+                     expires: DateTime.Now.AddMinutes(15),
                      signingCredentials: creds
               );
               return new JwtSecurityTokenHandler().WriteToken(token);
        }
 
-       public string GenerateRefreshToken(DateTime expiration, string username)
+       public string GenerateRefreshToken()
        {
-              if(string.IsNullOrEmpty(username))
-                     throw new ArgumentNullException(nameof(username));
-              if(expiration == default)
-                     throw new ArgumentNullException(nameof(expiration));
-              
-              DateTime now = DateTime.UtcNow;
-              int result = DateTime.Compare(expiration, now);
-              return result < 0 ? throw new TokenException("Token expired") : GenerateTokenJwt(username);
+              return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
        }
+       
 }

@@ -28,6 +28,7 @@ public class S4CDbContext : DbContext
             entity.Property(x => x.Name).IsRequired();
             entity.Property(x => x.Weight).IsRequired();
             entity.Property(x => x.WeightCategory).IsRequired();
+            entity.Property(x => x.Color).IsRequired();
             entity.Property(x => x.SerieId).IsRequired();
             entity.HasOne(x => x.Serie).WithMany().HasForeignKey(x => x.SerieId).IsRequired();
             entity.HasIndex(x => x.SerieId);

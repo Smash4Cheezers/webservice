@@ -53,17 +53,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = "myApp",
-        ValidAudience = "http://localhost:5183/api/",
+        ValidAudience = "https://localhost:7020/api/",
         IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(s: builder.Configuration["Jwt:Key"] ?? throw new NoNullAllowedException())),
         RequireExpirationTime = true,
         ClockSkew = TimeSpan.Zero
     };
 });
-builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy",
+        policy => policy.WithOrigins("https://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
 
 
 WebApplication app = builder.Build();
+app.UseHttpsRedirection();
+app.UseCookiePolicy();
+app.UseCors("AngularPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -73,6 +87,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.UseHttpsRedirection();
 
 app.Run();
