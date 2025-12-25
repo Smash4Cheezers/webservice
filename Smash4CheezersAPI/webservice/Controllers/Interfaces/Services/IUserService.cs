@@ -14,35 +14,35 @@ public interface IUserService
     /// </summary>
     /// <param name="user">user provided</param>
     /// <returns>User completed</returns>
-    Task<User> CreateUser(UserDTO user);
+    Task<User> CreateUser(UserDto user);
 
     /// <summary>
     ///     Get all users
     /// </summary>
     /// <returns>Collection of users</returns>
-    Task<IEnumerable<UserDTO?>> GetAllUsers();
+    Task<IEnumerable<UserDto?>> GetAllUsers();
 
     /// <summary>
     ///     Get a user by his id
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>the user</returns>
-    Task<UserDTO> GetUserById(int id);
+    Task<UserDto> GetUserById(int id);
 
     /// <summary>
     ///     Delete a user by his id
     /// </summary>
     /// <param name="id">id of the user</param>
     /// <returns>User deleted</returns>
-    Task<int> DeleteUser(int id);
+    Task<User> DeleteUser(int id);
 
     /// <summary>
     /// Update user informations
     /// </summary>
-    /// <param name="id">user id</param>
     /// <param name="user">user information</param>
+    /// <param name="characterId"></param>
     /// <returns></returns>
-    Task<User?> UpdateUserInformations(int id, UserDTO user);
+    Task<User?> UpdateUserInformations(UserDto user, int? characterId);
 
     /// <summary>
     /// Verify if the user is in the database and if the password is correct
@@ -50,5 +50,5 @@ public interface IUserService
     /// <param name="user">User informations from client-side</param>
     /// <exception cref="UserException">Returns a not found</exception>
     /// <returns>A token if informations are true and existing, a 404 if not</returns>
-    public Task<User?> LoginUser(UserDTO user);
+    public Task<UserDto?> LoginUser(AuthDTO user);
 }

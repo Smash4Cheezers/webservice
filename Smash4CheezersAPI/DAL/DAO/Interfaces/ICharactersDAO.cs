@@ -5,7 +5,7 @@ namespace DAL.DAO.Interfaces;
 /// <summary>
 ///     Interface defining data access operations for Character entities
 /// </summary>
-public interface ICharactersDAO
+public interface ICharactersDao
 {
     /// <summary>
     ///     Creates a new character in the database

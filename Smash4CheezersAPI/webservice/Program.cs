@@ -7,28 +7,31 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using webservice.Controllers.Interfaces.Helpers;
 using webservice.Controllers.Interfaces.Services;
 using webservice.Helpers;
 using webservice.Services;
+using webservice.Services.Interfaces.Helpers;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
+MySqlServerVersion serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 builder.Services.AddDbContext<S4CDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SmashForCheezers"), serverVersion));
 
 // DAO
-builder.Services.AddScoped<IUsersDAO, UsersDAO>();
-builder.Services.AddScoped<ICharactersDAO, CharactersDAO>();
-builder.Services.AddScoped<ISessionDAO, SessionDAO>();
+builder.Services.AddScoped<IUsersDao, UsersDao>();
+builder.Services.AddScoped<ICharactersDao, CharactersDao>();
+builder.Services.AddScoped<ISessionDao, SessionDao>();
+builder.Services.AddScoped<ISerieDAO, SerieDAO>();
+builder.Services.AddScoped<IChallengeDAO, ChallengeDAO>();
 
 // Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<ISerieService, SerieService>();
 
 // Helpers
 builder.Services.AddScoped<ITokenHelper, TokenHelper>();
@@ -50,16 +53,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = "myApp",
-        ValidAudience = "http://localhost:5183/api/",
+        ValidAudience = "https://localhost:7020/api/",
         IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(s: builder.Configuration["Jwt:Key"] ?? throw new NoNullAllowedException())),
         RequireExpirationTime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
     };
 });
-builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy",
+        policy => policy.WithOrigins("https://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
+
+WebApplication app = builder.Build();
+app.UseHttpsRedirection();
+app.UseCookiePolicy();
+app.UseCors("AngularPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -69,6 +87,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.UseHttpsRedirection();
 
 app.Run();

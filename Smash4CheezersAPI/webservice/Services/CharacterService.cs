@@ -10,38 +10,50 @@ namespace webservice.Services;
 /// </summary>
 public class CharacterService : ICharacterService
 {
-    private readonly ICharactersDAO _charactersDao;
+    private readonly ICharactersDao _charactersDao;
+    private readonly ISerieService _serieService;
     
     /// <summary>
     /// Constructor (dependencies injection)
     /// </summary>
     /// <param name="charactersDao">Dependency injection</param>
-    public CharacterService(ICharactersDAO charactersDao)
+    public CharacterService(ICharactersDao charactersDao, ISerieService serieService)
     {
         _charactersDao = charactersDao;
+        _serieService = serieService;
     }
-    
-    public async Task<IEnumerable<CharacterDTO?>> GetAllCharacters()
+
+    public async Task<IEnumerable<CharacterDto?>> GetAllCharacters()
     {
         IEnumerable<Character?> characters = await _charactersDao.GetAll();
-        return characters.Select(chara => new CharacterDTO
+        return characters.Select(chara => new CharacterDto()
         {
             Id = chara.Id,
             Name = chara.Name,
             Weight = chara.Weight,
             WeightCategory = chara.WeightCategory,
+            Color = chara.Color,
+            Serie = chara.Serie != null
+                ? new SerieDTO()
+                {
+                    Id = chara.SerieId,
+                    Name = chara.Serie.Name
+                }
+                : null,
         });
     }
 
-    public async Task<CharacterDTO?> GetCharacterById(int id)
+    public async Task<CharacterDto?> GetCharacterById(int id)
     {
         Character character = await _charactersDao.GetCharacterById(id) ?? throw new NullReferenceException();
-        CharacterDTO characterDto = new CharacterDTO
+        CharacterDto characterDto = new CharacterDto
         {
             Id = character.Id,
             Name = character.Name,
             Weight = character.Weight,
-            WeightCategory = character.WeightCategory
+            WeightCategory = character.WeightCategory,
+            Color = character.Color,
+            Serie = await _serieService.GetSerieById(character.SerieId),
         };
         return characterDto;
     }

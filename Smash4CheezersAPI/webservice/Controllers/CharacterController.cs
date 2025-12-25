@@ -1,88 +1,43 @@
-using DAL;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using webservice.Controllers.Interfaces.Services;
+using webservice.DTO;
 
 namespace webservice.Controllers;
 
+[Authorize(AuthenticationSchemes = "Bearer")]
 [Route("api/characters")]
 [ApiController]
 public class CharacterController : ControllerBase
 {
-    private readonly S4CDbContext _context;
+    private readonly ICharacterService _characterService;
 
-    public CharacterController(S4CDbContext context)
+    public CharacterController(ICharacterService characterService)
     {
-        _context = context;
+        _characterService = characterService;
     }
 
     // GET: api/Character
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
     {
-        return await _context.Characters.ToListAsync();
+        IEnumerable<CharacterDto?> characters = await _characterService.GetAllCharacters();
+        return Ok(characters);
     }
 
     // GET: api/Character/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Character>> GetCharacter(int id)
+    public async Task<ActionResult<CharacterDto>> GetCharacter(int id)
     {
-        var character = await _context.Characters.FindAsync(id);
+        CharacterDto? character = await _characterService.GetCharacterById(id);
 
         if (character == null) return NotFound();
 
         return character;
     }
-
-    // PUT: api/Character/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutCharacter(int id, Character character)
-    {
-        if (id != character.Id) return BadRequest();
-
-        _context.Entry(character).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!CharacterExists(id)) return NotFound();
-
-            throw;
-        }
-
-        return NoContent();
-    }
-
-    // POST: api/Character
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<Character>> PostCharacter(Character character)
-    {
-        _context.Characters.Add(character);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetCharacter", new { id = character.Id }, character);
-    }
-
-    // DELETE: api/Character/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCharacter(int id)
-    {
-        var character = await _context.Characters.FindAsync(id);
-        if (character == null) return NotFound();
-
-        _context.Characters.Remove(character);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool CharacterExists(int id)
-    {
-        return _context.Characters.Any(e => e.Id == id);
-    }
+    
 }

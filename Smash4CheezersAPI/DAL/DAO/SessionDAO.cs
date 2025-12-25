@@ -7,26 +7,32 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DAL.DAO;
 
-/// <inheritdoc />
-public class SessionDAO : ISessionDAO
+/// <summary>
+/// Implements the data access operations for the Session entity
+/// </summary>
+public class SessionDao : ISessionDao
 {
        private readonly S4CDbContext _context;
 
-       public SessionDAO(S4CDbContext context)
+       public SessionDao(S4CDbContext context)
        {
               _context = context;
        }
 
        public async Task<Session> CreateSession(Session session)
        {
+              if(session.User != null)
+                     _context.Users.Attach(session.User);
+              
               EntityEntry<Session> s = await _context.Sessions.AddAsync(session);
               await _context.SaveChangesAsync();
+              
               return s.Entity;
        }
 
-       public async Task<Session?> GetSessionByToken(string token)
+       public async Task<Session> GetSessionByToken(string token)
        {
-              var session = await _context.Sessions.Include(s => s.User).FirstOrDefaultAsync(s => s.Token == token);
+              Session? session = await _context.Sessions.AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.Token == token);
 
               if (session == null) throw new NotFoundException("Session not found");
               return session;
@@ -34,26 +40,25 @@ public class SessionDAO : ISessionDAO
 
        public async Task<Session?> GetSessionByUserId(int id)
        {
-              var session = await _context.Sessions.Include(s => s.User).FirstOrDefaultAsync(s => s.UserId == id);
+              Session? session = await _context.Sessions.AsNoTracking().Include(s => s.User).FirstOrDefaultAsync(s => s.UserId == id);
               if (session == null) throw new NotFoundException("Session not found");
               return session;
        }
 
        public async Task<IEnumerable<Session>> GetAllSessions()
        {
-              return await _context.Sessions.ToListAsync();
+              return await _context.Sessions.AsNoTracking().ToListAsync();
        }
 
        public async Task<Session?> GetSessionById(int id)
        {
-              return await _context.Sessions.FindAsync(id) != null
-                     ? await _context.Sessions.FindAsync(id)
-                     : throw new NotFoundException("Session not found");
+              return await _context.Sessions.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id)
+                     ?? throw new NotFoundException("Session not found");
        }
 
        public async Task<Session?> DeleteSession(int id)
        {
-              var session =
+              EntityEntry<Session> session =
                      _context.Sessions.Remove(await _context.Sessions.FindAsync(id) ??
                                               throw new NoNullAllowedException());
               await _context.SaveChangesAsync();
@@ -62,10 +67,17 @@ public class SessionDAO : ISessionDAO
                      : throw new NotFoundException("Session is already deleted");
        }
 
-       public async Task<Session?> UpdateSession(Session session)
+       public async Task<Session> UpdateSession(Session session)
        {
               EntityEntry<Session> s = _context.Sessions.Update(session);
               await _context.SaveChangesAsync();
               return s.Entity;
+       }
+
+       public async Task DeleteSessionByToken(string refreshToken)
+       {
+              _context.Sessions.Remove(await _context.Sessions.FindAsync(refreshToken) ??
+                                                     throw new NotFoundException("Session not found"));
+              await _context.SaveChangesAsync();
        }
 }

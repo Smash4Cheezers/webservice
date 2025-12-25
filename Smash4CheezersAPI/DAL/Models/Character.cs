@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
@@ -27,9 +28,24 @@ public class Character
     /// </summary>
     [Required]
     public int Weight { get; set; }
+    
+    /// <summary>
+    /// Most common color of the character
+    /// </summary>
+    [Required]
+    public string Color { get; set; }
 
     /// <summary>
-    ///     Its serie
+    ///   its serie id
     /// </summary>
-    public string Serie { get; set; }
+    [ForeignKey(nameof(Serie))]
+    [Required]
+    public int SerieId { get; set; }
+    
+    /// <summary>
+    /// Represents the serie to which the character belongs.
+    /// </summary>
+    public Serie Serie {get; set;}
+    
+    public ICollection<Challenge> Challenges { get; set; }
 }
