@@ -39,10 +39,10 @@ public interface IUserService
     /// <summary>
     /// Update user informations
     /// </summary>
-    /// <param name="id">user id</param>
     /// <param name="user">user information</param>
+    /// <param name="characterId"></param>
     /// <returns></returns>
-    Task<User?> UpdateUserInformations(int id, UserDto user);
+    Task<User?> UpdateUserInformations(UserDto user, int? characterId);
 
     /// <summary>
     /// Verify if the user is in the database and if the password is correct

@@ -32,6 +32,7 @@ public class CharacterService : ICharacterService
             Name = chara.Name,
             Weight = chara.Weight,
             WeightCategory = chara.WeightCategory,
+            Color = chara.Color,
             Serie = chara.Serie != null
                 ? new SerieDTO()
                 {
@@ -51,6 +52,7 @@ public class CharacterService : ICharacterService
             Name = character.Name,
             Weight = character.Weight,
             WeightCategory = character.WeightCategory,
+            Color = character.Color,
             Serie = await _serieService.GetSerieById(character.SerieId),
         };
         return characterDto;

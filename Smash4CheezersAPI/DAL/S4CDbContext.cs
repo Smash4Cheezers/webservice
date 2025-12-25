@@ -39,10 +39,10 @@ public class S4CDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.Username).IsRequired();
-            entity.HasAlternateKey(x => x.Username);
+            entity.HasIndex(x => x.Username).IsUnique();
             entity.Property(x => x.Password).IsRequired();
             entity.Property(x => x.Email).IsRequired();
-            entity.HasAlternateKey(x => x.Email);
+            entity.HasIndex(x => x.Email).IsUnique();
             entity.Property(x => x.CharacterId).IsRequired(false);
             entity.HasOne(c => c.Character)
                 .WithMany()

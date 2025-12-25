@@ -2,10 +2,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using DAL.Models;
 using Microsoft.IdentityModel.Tokens;
 using webservice.DTO;
-using webservice.Exceptions;
 using webservice.Services.Interfaces.Helpers;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -34,13 +32,16 @@ public class TokenHelper : ITokenHelper
                      new SymmetricSecurityKey(
                             Convert.FromBase64String(secretKey.Value ?? throw new NoNullAllowedException()));
               SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-              Claim[] claims = new[]
-              {
-                     new Claim(JwtRegisteredClaimNames.Sub, userDto.Id.ToString()),
-                     new Claim(ClaimTypes.Name, userDto.Username),
-                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-              };
+             
+                     List<Claim> claims = new()
+                     {
+                            new Claim(JwtRegisteredClaimNames.Sub, userDto.Id.ToString()),
+                            new Claim(ClaimTypes.Name, userDto.Username),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                     };
+                     
+                     if(userDto.Character != null)
+                            claims.Add(new Claim("CharacterId", userDto.Character.Id.ToString()));
 
               JwtSecurityToken token = new JwtSecurityToken
               (
@@ -57,5 +58,4 @@ public class TokenHelper : ITokenHelper
        {
               return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
        }
-       
 }

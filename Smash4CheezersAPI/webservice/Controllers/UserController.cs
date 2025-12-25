@@ -113,20 +113,34 @@ public class UserController : ControllerBase
               return res;
        }
 
-       [HttpPut("{id}")]
-       public async Task<ActionResult<UserDto>> UpdateUser(int id, [FromBody] UserDto user)
+       [HttpPut]
+       public async Task<ActionResult<UserDto>> UpdateUser([FromBody] InformationsDTO infos)
        {
-              if (id != user.Id) return NotFound(id);
-
+              ActionResult<UserDto> res;
               try
               {
-                     await _userService.UpdateUserInformations(id, user);
-                     return NoContent();
+                     var claimId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+                                   ?? User.FindFirst("sub")?.Value;
+                     if(claimId == null) res = Unauthorized();
+                     else
+                     {
+                            int userId = int.Parse(claimId);
+                            UserDto user = new()
+                            {
+                                   Id = userId,
+                                   Username = infos.Username ?? string.Empty,
+                                   Email = infos.Email ?? string.Empty,
+                                   Password = infos.Password ?? string.Empty,
+                            };
+                            await _userService.UpdateUserInformations(user, infos.CharacterId);
+                            res = NoContent();
+                     }
               }
               catch (Exception e)
               {
-                     return NotFound();
+                     res = BadRequest(e.Message);
               }
+              return res;
        }
 
        /// <summary>
@@ -161,7 +175,7 @@ public class UserController : ControllerBase
                      });
                      Response.Headers.Append("X-Access-Token", accessToken);
 
-                     res = Ok(new { accessToken });
+                     res = Ok(new { accessToken});
               }
               catch (DuplicateEntryException ex)
               {
@@ -185,10 +199,9 @@ public class UserController : ControllerBase
               {
                      await _sessionService.DeleteByToken(refreshToken);
               }
-
               Response.Cookies.Delete("refreshToken", new CookieOptions
               {
-                     Path = "/api/users/refresh"
+                     Path = "/"
               });
 
               return NoContent();

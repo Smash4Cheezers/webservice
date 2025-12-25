@@ -1,4 +1,5 @@
 ﻿using DAL.DAO.Interfaces;
+using DAL.Exceptions;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using webservice.Controllers.Interfaces.Services;
@@ -96,15 +97,17 @@ public class UserService : IUserService
               return await _usersDao.Delete(id);
        }
 
-       public async Task<User?> UpdateUserInformations(int id, UserDto user)
+       public async Task<User?> UpdateUserInformations(UserDto user, int? characterId)
        {
-              User u = new User
-              {
-                     Id = id,
-                     Username = user.Username,
-                     Email = user.Email,
-                     Password = _passwordHasher.HashPassword(null, user.Password)
-              };
-              return await _usersDao.Update(u);
+              if (user.Id == 0) throw new UserException("User ID cannot be 0");
+              User? userInDb = await _usersDao.GetUser(user.Id);
+              if (userInDb == null) throw new NotFoundException("User not found");
+        
+              if(!string.IsNullOrEmpty(user.Email)) userInDb.Email = user.Email;
+              if(!string.IsNullOrEmpty(user.Username)) userInDb.Username = user.Username;
+              if (characterId != null && characterId != 0) userInDb.CharacterId = characterId;
+              if(!string.IsNullOrEmpty(user.Password)) userInDb.Password = user.Password;
+              
+              return await _usersDao.Update(userInDb);
        }
 }

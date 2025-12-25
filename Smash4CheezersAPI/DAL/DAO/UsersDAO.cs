@@ -38,9 +38,18 @@ public class UsersDao : IUsersDao
 
     public async Task<User?> Update(User user)
     {
-        EntityEntry<User> u = _context.Users.Update(user);
-        await _context.SaveChangesAsync();
-        return u.Entity;
+        _context.Entry(user).State = EntityState.Modified;
+        try
+        {
+            await _context.SaveChangesAsync();
+            return user;
+        }
+        catch (DbUpdateException e)
+        {
+            if(e.InnerException is MySqlConnector.MySqlException)
+                throw new DuplicateEntryException("Username or Email already exists");
+            throw new DbUpdateException("Unable to save user", e);
+        }
     }
 
     public async Task<User> Delete(int id)
