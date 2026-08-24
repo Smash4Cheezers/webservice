@@ -238,7 +238,9 @@ public class UserController : ControllerBase
                             UserDto userDto = new()
                             {
                                    Id = session.UserId,
-                                   Username = session.User.Username
+                                   Username = session.User.Username,
+                                   Email = session.User.Email,
+                                   CharacterId = session.User.CharacterId
                             };
                             string newAccessToken = _sessionService.GenerateAccessToken(userDto);
 

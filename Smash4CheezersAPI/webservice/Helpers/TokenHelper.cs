@@ -36,12 +36,10 @@ public class TokenHelper : ITokenHelper
                      List<Claim> claims = new()
                      {
                             new Claim(JwtRegisteredClaimNames.Sub, userDto.Id.ToString()),
-                            new Claim(ClaimTypes.Name, userDto.Username),
+                            new Claim(JwtRegisteredClaimNames.Name, userDto.Username),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim("characterid", userDto.CharacterId.ToString() ?? "1")
                      };
-                     
-                     if(userDto.Character != null)
-                            claims.Add(new Claim("CharacterId", userDto.Character.Id.ToString()));
 
               JwtSecurityToken token = new JwtSecurityToken
               (
